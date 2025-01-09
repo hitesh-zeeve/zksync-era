@@ -43,12 +43,15 @@ pub async fn run(shell: &Shell, args: FeesArgs) -> anyhow::Result<()> {
         .init_test_wallet(&ecosystem_config, &chain_config)
         .await?;
 
-    let mut command = cmd!(shell, "yarn jest fees.test.ts --testTimeout 240000")
-        .env("SPAWN_NODE", "1")
-        .env("RUN_FEE_TEST", "1")
-        .env("NO_KILL", args.no_kill.to_string())
-        .env("CHAIN_NAME", ecosystem_config.current_chain())
-        .env("MASTER_WALLET_PK", wallets.get_test_pk(&chain_config)?);
+    let mut command = cmd!(
+        shell,
+        "yarn jest fees.test.ts --testTimeout 240000 --detectOpenHandles"
+    )
+    .env("SPAWN_NODE", "1")
+    .env("RUN_FEE_TEST", "1")
+    .env("NO_KILL", args.no_kill.to_string())
+    .env("CHAIN_NAME", ecosystem_config.current_chain())
+    .env("MASTER_WALLET_PK", wallets.get_test_pk(&chain_config)?);
 
     if global_config().verbose {
         command = command.env(
